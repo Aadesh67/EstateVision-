@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FutureVision - LunchBreak</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+<style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body, html {
+            font-family: 'Avenir', sans-serif;
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            justify-content: flex-end;
+            padding: 20px;
+            height: 100vh;
+            pointer-events: none;
+        }
+
+        .form-container {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 20px;
+            width: 45%;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            pointer-events: auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #f39c12;
+            margin-bottom: 30px;
+            font-size: 2rem;
+            font-family: 'Avenir', sans-serif;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        select,
+        input[type="submit"] {
+            width: 100%;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 1rem;
+            border: none;
+            transition: 0.3s;
+        }
+
+        input[type="text"],
+        select {
+            border: 2px solid #2980b9;
+            background: rgba(255, 255, 255, 0.2);
+            color: #000;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        select:focus {
+            border-color: #f39c12;
+            outline: none;
+        }
+
+        input[type="submit"] {
+            background-color: #f39c12;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: transform 0.3s ease;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #d35400;
+            transform: translateY(-3px);
+        }
+
+        .input-icon {
+            position: relative;
+        }
+
+        .input-icon i {
+            position: absolute;
+            top: 50%;
+            left: 15px;
+            transform: translateY(-50%);
+            color: #f39c12;
+            font-size: 1.2rem;
+        }
+
+        .input-icon input {
+            padding-left: 40px;
+        }
+
+        .input-icon select {
+            padding-left: 40px;
+        }
+
+        /* Sliding House Images */
+        .sliding-images-container {
+            margin: 20px auto;
+            overflow: hidden;
+            position: relative;
+            width: 100%;
+            height: 150px;
+            border-radius: 10px;
+            background-color: #fff;
+            margin-top: 10px;
+        }
+
+        .sliding-images {
+            display: flex;
+            width: 200%;
+            animation: slideImages 10s linear infinite;
+        }
+
+        .sliding-images img {
+            width: 150px;
+            height: 150px;
+            border-radius: 10px;
+            object-fit: cover;
+        }
+
+        /* Duplicate the images for seamless looping */
+        @keyframes slideImages {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map"></div> <!-- Fullscreen map -->
+
+    <div class="container">
+        <div class="form-container">
+            <h1><i class="fas fa-map-marker-alt"></i> FutureVision - LunchBreak</h1>
+            <form action="/predict" method="POST">
+                <div class="form-group">
+                    <label for="crime_data"><i class="fas fa-shield-alt"></i> Select District:</label>
+                    <select id="crime_data" name="crime_data" required>
+                        <option value="">Select District</option>
+                        <option value="Ariyalur">Ariyalur</option>
+                        <option value="Chennai">Chennai</option>
+                        <option value="Coimbatore">Coimbatore</option>
+                        <option value="Coimbatore City">Coimbatore City</option>
+                        <option value="Cuddalore">Cuddalore</option>
+                        <option value="Dharmapuri">Dharmapuri</option>
+                        <option value="Dindigul">Dindigul</option>
+                        <option value="Erode">Erode</option>
+                        <option value="Kanchipuram">Kanchipuram</option>
+                        <option value="Kanyakumari">Kanyakumari</option>
+                        <option value="Karur">Karur</option>
+                        <option value="Krishnagiri">Krishnagiri</option>
+                        <option value="Madurai">Madurai</option>
+                        <option value="Nagapattinam">Nagapattinam</option>
+                        <option value="Thiruvallur">Thiruvallur</option>
+                        <!-- Add remaining district options -->
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="disaster_data"><i class="fas fa-exclamation-triangle"></i> Select Zone:</label>
+                    <select id="disaster_data" name="disaster_data" required>
+                        <option value="">Select Zone</option>
+                        <option value="Ariyalur">Ariyalur</option>
+                        <option value="Chengalpattu">Chengalpattu</option>
+                        <option value="chennai">Chennai</option>
+                        <option value="Coimbatore">Coimbatore</option>
+                        <option value="Cuddalore">Cuddalore</option>
+                        <option value="Dharmapuri">Dharmapuri</option>
+                        <option value="Erode">Erode</option>
+                        <option value="Salem">Salem</option>
+                        <!-- Add remaining zone options -->
+                    </select>
+                </div>
+
+                <div class="form-group" style="display:none;">
+                    <label for="future_projection"><i class="fas fa-clock"></i> Future Projection:</label>
+                    <input type="text" id="future_projection" name="future_projection" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="house_data"><i class="fas fa-home"></i> Select Area:</label>
+                    <select id="house_data" name="house_data" required>
+                        <option value="">Select Area</option>
+                        <option value="Adyar">Adyar</option>
+                        <option value="Ana Nagar">Ana Nagar</option>
+                        <option value="KK Nagar">KK Nagar</option>
+                        <option value="T Nagar">T Nagar</option>
+                        <option value="Velachery">Velachery</option>
+                        <option value="Chrompet">Chrompet</option>
+                        <option value="Karapakkam">Karapakkam</option>
+                        <option value="KKNagar">KKNagar</option>
+                        <!-- Add remaining area options -->
+                    </select>
+                </div>
+
+                <input type="hidden" id="knn_lat" name="knn_lat">
+                <input type="hidden" id="knn_lng" name="knn_lng">
+
+                <div class="form-group">
+                    <input type="submit" value="Predict Land Price">
+                </div>
+            </form>
+
+            <!-- Sliding house images -->
+            <div class="sliding-images-container">
+                <div class="sliding-images">
+                    <!-- Duplicate set of images for endless loop -->
+                  <img src="https://thumbs.dreamstime.com/b/d-render-modern-house-isolated-white-background-modern-house-d-rendering-luxury-style-isolated-white-background-131073005.jpg" alt="House 1">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcROfQCiLCxYV8Qv71-jsgbHVtIEZSe0-xQn-Q&s" alt="House 2">
+                    <img src="https://png.pngtree.com/thumb_back/fw800/background/20231007/pngtree-white-colored-two-story-house-isolated-on-white-a-3d-rendering-image_13514187.png" alt="House 3">
+                    <img src="https://png.pngtree.com/thumb_back/fw800/background/20231005/pngtree-exterior-view-of-a-wooden-house-on-a-white-background-a-image_13568555.png" alt="House 4">
+                    <img src="https://t4.ftcdn.net/jpg/08/50/53/07/360_F_850530740_C2xF9ur3LcPRWhI3Y4CKT9p3AzsUkrFB.jpg" alt="House 5">
+
+                    <!-- Duplicating for seamless scrolling -->
+                   <img src="https://thumbs.dreamstime.com/b/d-render-modern-house-isolated-white-background-modern-house-d-rendering-luxury-style-isolated-white-background-131073005.jpg" alt="House 1">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcROfQCiLCxYV8Qv71-jsgbHVtIEZSe0-xQn-Q&s" alt="House 2">
+                    <img src="https://png.pngtree.com/thumb_back/fw800/background/20231007/pngtree-white-colored-two-story-house-isolated-on-white-a-3d-rendering-image_13514187.png" alt="House 3">
+                    <img src="https://png.pngtree.com/thumb_back/fw800/background/20231005/pngtree-exterior-view-of-a-wooden-house-on-a-white-background-a-image_13568555.png" alt="House 4">
+                    <img src="https://t4.ftcdn.net/jpg/08/50/53/07/360_F_850530740_C2xF9ur3LcPRWhI3Y4CKT9p3AzsUkrFB.jpg" alt="House 5">
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        var map = L.map('map').setView([13.0827, 80.2707], 12);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+        }).addTo(map);
+        var marker;
+        map.on('click', function (e) {
+            var lat = e.latlng.lat;
+            var lng = e.latlng.lng;
+            document.getElementById('knn_lat').value = lat;
+            document.getElementById('knn_lng').value = lng;
+            document.getElementById('future_projection').value = lat + ',' + lng; // Link the future_projection to the KNN lat and lng
+            if (marker) {
+                map.removeLayer(marker);
+            }
+            marker = L.marker([lat, lng]).addTo(map).bindPopup("Selected Location").openPopup();
+        });
+
+
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FutureVision Results</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #f5a623;
+            --success-color: #7ed321;
+            --danger-color: #d0021b;
+            --warning-color: #f5a623;
+            --info-color: #4a90e2;
+            --light-color: #f8f9fa;
+            --dark-color: #333333;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--light-color);
+            color: var(--dark-color);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: var(--primary-color);
+        }
+
+        .output-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .output-card {
+            background-color: #ffffff;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: var(--box-shadow);
+            transition: transform 0.3s ease;
+        }
+
+        .output-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .output-card h3 {
+            margin-top: 0;
+            color: var(--primary-color);
+        }
+
+        .progress-bar {
+            height: 10px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 1rem;
+        }
+
+        .progress {
+            height: 100%;
+            border-radius: 5px;
+            transition: width 1s ease-out;
+        }
+
+        .percentage {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-top: 0.5rem;
+        }
+
+        .price-card {
+            grid-column: 1 / -1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border: 3px solid var(--primary-color);
+            color: var(--primary-color);
+            background-color: #e9f5ff;
+        }
+
+        .price-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        .price-box {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-top: 1rem;
+        }
+
+        #map {
+            margin-top: 2rem;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: var(--box-shadow);
+        }
+
+        .final-price {
+            text-align: center;
+            font-size: 2rem;
+            margin-top: 2rem;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .output-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>FutureVision Results</h1>
+
+        <div class="output-grid">
+            <div class="output-card">
+                <h3>Future Growth Score</h3>
+                <div class="progress-bar">
+                    <div class="progress" style="width: {{ future_output }}%; background-color: var(--success-color);"></div>
+                </div>
+                <div class="percentage">{{ future_output }}%</div>
+            </div>
+
+            <div class="output-card">
+                <h3>Crime Data Score</h3>
+                <div class="progress-bar">
+                    <div class="progress" style="width: {{ crime_output }}%; background-color: var(--danger-color);"></div>
+                </div>
+                <div class="percentage">{{ crime_output }}%</div>
+            </div>
+
+            <div class="output-card">
+                <h3>Disaster Prone Score</h3>
+                <div class="progress-bar">
+                    <div class="progress" style="width: {{ disaster_output }}%; background-color: var(--warning-color);"></div>
+                </div>
+                <div class="percentage">{{ disaster_output }}%</div>
+            </div>
+
+            <div class="output-card">
+                <h3>House Model Output</h3>
+                <div class="progress-bar">
+                    <div class="progress" style="width: {{ house_output }}%; background-color: var(--info-color);"></div>
+                </div>
+                <div class="percentage">{{ house_output }}%</div>
+            </div>
+
+            <div class="output-card">
+                <h3>KNN Model Proximity Score</h3>
+                <div class="progress-bar">
+                    <div class="progress" style="width: {{ knn_output }}%; background-color: var(--secondary-color);"></div>
+                </div>
+                <div class="percentage">{{ knn_output }}%</div>
+            </div>
+
+            <div class="output-card price-card">
+                <h3>Original Price Per Sq Ft</h3>
+                <div class="price-box">₹{{ original_price_per_sqft }}</div>
+            </div>
+
+            <div class="output-card price-card">
+                <h3>Future Price Per Sq Ft</h3>
+                <div class="price-box">₹{{ future_price_per_sqft }}</div>
+            </div>
+        </div>
+
+        <div class="final-price">
+            Final Score: {{ final_price }}
+        </div>
+
+        <h2>Location Map</h2>
+        <div id="map">
+            {% if map_file %}
+                <iframe src="{{ url_for('static', filename=map_file) }}" width="100%" height="400px" frameborder="0" style="border:0;" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
+            {% else %}
+                <p>No map available for this location.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const progressBars = document.querySelectorAll('.progress');
+            progressBars.forEach(bar => {
+                const width = bar.style.width;
+                bar.style.width = '0';
+                setTimeout(() => {
+                    bar.style.width = width;
+                }, 100);
+            });
+        });
+    </script>
+</body>
+</html>
